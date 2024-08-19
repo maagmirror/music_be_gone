@@ -1,24 +1,31 @@
 # Reggaeton Be Gone
-Detects reggaeton musical genre with Machine Learning and sends packets to disable BT speakers (hopefully)
+sends packets to disable BT speakers (hopefully)
+
+#install
+
+```ssh
+pip install RPi.GPIO
+pip3 install Adafruit_GPIO
+sudo apt install git
+pip install picamera
+sudo apt install python3-opencv
+sudo apt-get install libatlas-base-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev
+git clone https://github.com/edgeimpulse/linux-sdk-python
+sudo python3 -m pip install edge_impulse_linux -i https://pypi.python.org/simple
+sudo python3 -m pip install numpy
+sudo python3 -m pip install pyaudio
+```
 
 # Parts 
-Raspberry Pi 3 https://www.dfrobot.com/product-1703.html?tracking=hOuIhw4fDaJRTdy4abz04npbQC78dqxBkqVt7XMFYxEXj2s0ukWgm71wbut0ewUP
+Raspberry Pi 3 \
 
-DFRobot Oled 128x32 screen https://www.dfrobot.com/product-2018.html?tracking=hOuIhw4fDaJRTdy4abz04npbQC78dqxBkqVt7XMFYxEXj2s0ukWgm71wbut0ewUP
+DFRobot Oled 128x32 \
 
-Push button https://www.dfrobot.com/product-1098.html?tracking=hOuIhw4fDaJRTdy4abz04npbQC78dqxBkqVt7XMFYxEXj2s0ukWgm71wbut0ewUP
+Push button \
 
-BT Audio Receiver 5.0 (to test with your own BT) https://www.dfrobot.com/product-2085.html?tracking=hOuIhw4fDaJRTdy4abz04npbQC78dqxBkqVt7XMFYxEXj2s0ukWgm71wbut0ewUP 
+BT Audio Receiver 5.0 (to test with your own BT) \
 
 Jumper cables
-
-# Machine Learning
-Model trained using Edge Impulse platform https://edgeimpulse.com/ (free account for developers)
-I will soon post the eim file or make public my project for cloning
-
-# Complete Instructions
-English https://www.hackster.io/roni-bandini/reggaeton-be-gone-e5b6e2
-Spanish workshop https://www.youtube.com/watch?v=sPcHeiP9Xgg
 
 # Connections
 Oled SDA ->  Rpi GPIO 2
@@ -31,12 +38,8 @@ Button pin 2 -> GND
 
 Power supply: 5V 3A
 
-# 2.0 Experimental version
-This version was made for the Nerdearla Chile workshop. It includes several enhancements and it is available for download including ML model and 3d case at https://www.patreon.com/RoniBandini/shop/reggaeton-be-gone-experimental-2-0-289842
-
-
 # Oled screen font
 Font: White Rabbit, Created By: Matthew Welch
 
-# Contact
+# Originally created by
 Roni Bandini, @RoniBandini
