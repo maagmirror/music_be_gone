@@ -1,6 +1,21 @@
 # Reggaeton Be Gone
 sends packets to disable BT speakers (hopefully)
 
+#install
+
+```ssh
+pip install RPi.GPIO
+pip3 install Adafruit_GPIO
+sudo apt install git
+pip install picamera
+sudo apt install python3-opencv
+sudo apt-get install libatlas-base-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev
+git clone https://github.com/edgeimpulse/linux-sdk-python
+sudo python3 -m pip install edge_impulse_linux -i https://pypi.python.org/simple
+sudo python3 -m pip install numpy
+sudo python3 -m pip install pyaudio
+```
+
 # Parts 
 Raspberry Pi 3 \
 
