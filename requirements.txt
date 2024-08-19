@@ -4,3 +4,5 @@ picamera
 edge_impulse_linux
 numpy
 pyaudio
+luma.oled
+Pillow
