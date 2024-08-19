@@ -1,6 +1,12 @@
 # Reggaeton Be Gone
 sends packets to disable BT speakers (hopefully)
 
+
+```ssh
+sudo raspi-config
+```
+And enabled SSH and i2c
+
 #install
 
 ```ssh
